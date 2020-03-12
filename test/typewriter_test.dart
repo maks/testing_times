@@ -10,13 +10,28 @@ void main() {
       typewriter = TypewriterBloc();
     });
 
-    test('get a char when monkey types', () {
-      String char;
-      typewriter.chars.listen((event) {
-        char = event;
+    // This test will fail because of async and microtasks
+    // test('get a char when monkey types', () {
+    //   String char;
+    //   typewriter.chars.listen((event) {
+    //     char = event;
+    //   });
+    //   typewriter.monkeyType();
+    //   expect(char, isNotNull);
+    // });
+
+    test('get a char when monkey types (with time travel)', () {
+      FakeAsync().run((async) {
+        String char;
+        typewriter.chars.listen((event) {
+          char = event;
+        });
+        typewriter.monkeyType();
+
+        // now need to flush to get Stream to emit
+        async.flushMicrotasks();
+        expect(char, isNotNull);
       });
-      typewriter.monkeyType();
-      expect(char, isNotNull);
     });
   });
 }
