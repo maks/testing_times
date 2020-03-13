@@ -33,5 +33,23 @@ void main() {
         expect(char, isNotNull);
       });
     });
+
+    test('get a set of chars when monkey pauses typing', () {
+      FakeAsync().run((async) {
+        String stanza;
+        typewriter.charGroup.listen((event) {
+          stanza = event;
+        });
+        typewriter.monkeyType();
+        typewriter.monkeyType();
+        typewriter.monkeyType();
+
+        //fast forward time to after the required pause
+        async.elapse(TypewriterBloc.WAIT_FOR_TYPING_PAUSE);
+
+        expect(stanza, isNotNull);
+        expect(typewriter.buffer.length, 3);
+      });
+    });
   });
 }
